@@ -1,6 +1,5 @@
 ---
 interface ContactLink {
-  icon: string;
   label: string;
   href: string;
 }
@@ -10,21 +9,25 @@ interface Props {
 }
 
 const { links = [
-  { icon: '📧', label: 'Email', href: 'mailto:example@example.com' },
-  { icon: '🐙', label: 'GitHub', href: 'https://github.com/rita-rita24' },
-  { icon: '🐦', label: 'X', href: 'https://x.com/Ar2tDev' }
+  { label: 'GitHub', href: 'https://github.com/rita-rita24' },
+  { label: 'X', href: 'https://x.com/Ar2tDev' },
+  { label: 'note', href: 'https://note.com/rita_rita_24' }
 ] } = Astro.props;
 ---
 
-<section id="contact">
+<div class="section-container">
   <h2 class="section-title">コンタクト (Contact)</h2>
+  <section id="contact">
+    <div class="contact-grid">
+      {links.map((link) => (
+        <a href={link.href} class="contact-item" target="_blank" rel="noopener noreferrer">
+          <span class="contact-label">{link.label}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</div>
 
-  <div class="contact-grid">
-    {links.map((link) => (
-      <a href={link.href} class="contact-item" target="_blank" rel="noopener noreferrer">
-        <span class="contact-icon">{link.icon}</span>
-        <span class="contact-label">{link.label}</span>
-      </a>
-    ))}
-  </div>
-</section>
+<footer>
+  <p>© 2025 Your Name - All Rights Reserved</p>
+</footer>

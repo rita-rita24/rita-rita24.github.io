@@ -1,72 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SoundControl from '../components/SoundControl.astro';
 import HeroSection from '../components/HeroSection.astro';
 import SkillsSection from '../components/SkillsSection.astro';
 import PortfolioSection from '../components/PortfolioSection.astro';
 import ContactSection from '../components/ContactSection.astro';
 ---
 
-<BaseLayout title="⚔️ RPG Profile">
-  <SoundControl />
-  <main class="main-content">
-    <HeroSection />
-    <SkillsSection />
-    <PortfolioSection />
-    <ContactSection />
-  </main>
-
-  <script>
-    import { audio } from '../scripts/audio-system';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      let audioInitialized = false;
-      const initAudio = () => {
-        if (!audioInitialized) {
-          audio.init();
-          audio.startBGM();
-          audioInitialized = true;
-        }
-      };
-
-      document.body.addEventListener('click', initAudio, { once: true });
-
-      const bgmBtn = document.getElementById('bgmBtn');
-      const sfxBtn = document.getElementById('sfxBtn');
-
-      bgmBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        initAudio();
-        const enabled = audio.toggleBGM();
-        bgmBtn.classList.toggle('muted', !enabled);
-        audio.playClick();
-      });
-
-      sfxBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        initAudio();
-        const enabled = audio.toggleSFX();
-        sfxBtn.classList.toggle('muted', !enabled);
-        if (enabled) audio.playClick();
-      });
-
-      document.querySelectorAll('.tag, .work-item, .contact-item, .sound-btn, details summary').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-          if (audioInitialized) audio.playHover();
-        });
-      });
-
-      document.querySelectorAll('.work-item, .contact-item').forEach(el => {
-        el.addEventListener('click', () => {
-          if (audioInitialized) audio.playClick();
-        });
-      });
-
-      document.querySelectorAll('details summary').forEach(el => {
-        el.addEventListener('click', () => {
-          if (audioInitialized) audio.playSelect();
-        });
-      });
-    });
-  </script>
+<BaseLayout title="プロフィール：リタリタ">
+  <header class="app-header">
+    <div class="status-mini">プロフィールサイト</div>
+  </header>
+  <HeroSection />
+  <SkillsSection />
+  <PortfolioSection />
+  <ContactSection />
 </BaseLayout>

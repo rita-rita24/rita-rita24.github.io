@@ -3,7 +3,7 @@ interface Props {
   title?: string;
 }
 
-const { title = 'RPG Profile' } = Astro.props;
+const { title = 'プロフィールサイト' } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -11,11 +11,42 @@ const { title = 'RPG Profile' } = Astro.props;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="RPG風個人プロフィールサイト - 冒険者のステータス">
+  <meta name="description" content="プロフィールサイト">
   <title>{title}</title>
   <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
   <slot />
+
+  <script>
+    import { audio } from '../scripts/audio-system';
+
+    let audioInitialized = false;
+
+    const initAudio = () => {
+      if (!audioInitialized) {
+        audio.init();
+        audioInitialized = true;
+      }
+    };
+
+    document.body.addEventListener('click', initAudio, { once: true });
+
+    // 効果音をインタラクティブ要素に適用
+    document.querySelectorAll('.tag, .work-item, .contact-item, .stat-item, details summary').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        if (audioInitialized) audio.playHover();
+      });
+      el.addEventListener('click', () => {
+        if (audioInitialized) audio.playClick();
+      });
+    });
+
+    document.querySelectorAll('details summary').forEach(el => {
+      el.addEventListener('click', () => {
+        if (audioInitialized) audio.playSelect();
+      });
+    });
+  </script>
 </body>
 </html>

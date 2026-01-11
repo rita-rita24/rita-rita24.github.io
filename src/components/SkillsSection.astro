@@ -12,48 +12,37 @@ interface Props {
 }
 
 const {
-  tags = ['Java', 'TypeScript', 'Spring Boot', 'React', 'AWS'],
+  tags = ['Java', 'TypeScript', 'PHP', 'Laravel'],
   skills = [
-    {
-      icon: '🔵',
-      name: 'Backend Development',
-      description: 'Java + Spring Bootを使用したWebアプリケーション開発。RESTful API設計とDB最適化に精通。',
-      detail: '得意分野: マイクロサービス / API設計'
-    },
-    {
-      icon: '🟣',
-      name: 'Frontend Development',
-      description: 'React + TypeScriptによるモダンなUI開発。Astro/Next.jsなどのフレームワークも活用。',
-      detail: '得意分野: コンポーネント設計 / UX改善'
-    },
-    {
-      icon: '🟡',
-      name: 'DevOps & Cloud',
-      description: 'Docker, AWS, CI/CDパイプラインの構築と運用。インフラの自動化と監視。',
-      detail: '資格: AWS Solutions Architect'
-    }
+//    {
+//      icon: '🔵',
+//      name: 'Backend Development',
+//      description: 'Java + Spring Bootを使用したWebアプリケーション開発。RESTful API設計とDB最適化に精通。',
+//      detail: '得意分野: マイクロサービス / API設計'
+//    }
   ]
 } = Astro.props;
 ---
 
-<section id="skills">
+<div class="section-container">
   <h2 class="section-title">スキル (Skills)</h2>
+  <section id="skills">
+    <div class="tag-list">
+      {tags.map((tag) => (
+        <span class="tag">{tag}</span>
+      ))}
+    </div>
 
-  <div class="tag-list">
-    {tags.map((tag) => (
-      <span class="tag">{tag}</span>
+    {skills.map((skill) => (
+      <details>
+        <summary>{skill.icon} {skill.name}</summary>
+        <div class="trait-content">
+          {skill.description}
+          {skill.detail && (
+            <><br /><span style="color: var(--secondary);">{skill.detail}</span></>
+          )}
+        </div>
+      </details>
     ))}
-  </div>
-
-  {skills.map((skill) => (
-    <details>
-      <summary>{skill.icon} {skill.name}</summary>
-      <div class="trait-content">
-        {skill.description}
-        {skill.detail && (
-          <><br /><span style="color: var(--accent-green);">{skill.detail}</span></>
-        )}
-      </div>
-    </details>
-  ))}
-</section>
+  </section>
+</div>

@@ -7,36 +7,36 @@ interface Stat {
 interface Props {
   avatar?: string;
   name?: string;
-  className?: string;
-  level?: number;
+  job?: string;
   stats?: Stat[];
 }
 
 const {
-  avatar = '🧙',
-  name = 'Your Name',
-  className = 'Backend Engineer',
-  level = 99,
+  avatar = '/images/icon_profile.png',
+  name = 'リタリタ',
+  job = 'バックエンドエンジニア',
   stats = [
-    { label: 'ATK', value: '1,240' },
-    { label: 'DEF', value: '850' },
-    { label: 'INT', value: '2,100' },
-    { label: 'AGI', value: '1,150' }
+    { label: '出身地', value: '大阪' },
+    { label: '性別', value: '男' },
+    { label: '年齢', value: '25歳' },
+    { label: '趣味', value: '漫画、温泉' }
   ]
 } = Astro.props;
 ---
 
 <section id="profile" class="hero-section">
-  <div class="avatar">{avatar}</div>
-  <div class="char-name">{name}</div>
-  <div class="char-class">Class: {className} / Lv.{level}</div>
+  <div class="hero-inner">
+    <div class="avatar"><img src={avatar} alt="プロフィール画像" class="avatar-img" /></div>
+    <div class="char-name">{name}</div>
+    <div class="char-job">職業: {job}</div>
 
-  <div class="stats-grid">
-    {stats.map((stat) => (
-      <div class="stat-item">
-        <span>{stat.label}</span>
-        <span class="stat-val">{stat.value}</span>
-      </div>
-    ))}
+    <div class="stats-grid">
+      {stats.map((stat) => (
+        <div class="stat-item">
+          <span>{stat.label}</span>
+          <span class="stat-val">{stat.value}</span>
+        </div>
+      ))}
+    </div>
   </div>
 </section>

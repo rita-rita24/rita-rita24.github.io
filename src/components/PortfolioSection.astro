@@ -1,6 +1,5 @@
 ---
 interface Work {
-  icon: string;
   label: string;
   tech?: string;
 }
@@ -10,25 +9,25 @@ interface Props {
 }
 
 const { works = [
-  { icon: '🤖', label: 'AI Method Board', tech: 'Spring Boot' },
-  { icon: '📁', label: 'File Manager', tech: 'Tauri + Rust' },
-  { icon: '🎮', label: 'Rhythm Game', tech: 'Three.js' },
-  { icon: '📚', label: 'Learning Platform', tech: 'Next.js' },
-  { icon: '⚡', label: 'CLI Tool', tech: 'Rust' },
-  { icon: '🔧', label: 'Dev Tools', tech: 'TypeScript' }
+  { label: 'AI Method Board', tech: 'Spring Boot' },
+  { label: 'File Manager', tech: 'Tauri + Rust' },
+  { label: 'Rhythm Game', tech: 'Three.js' },
+  { label: 'Learning Platform', tech: 'Next.js' },
+  { label: 'CLI Tool', tech: 'Rust' },
+  { label: 'Dev Tools', tech: 'TypeScript' }
 ] } = Astro.props;
 ---
 
-<section id="works">
+<div class="section-container">
   <h2 class="section-title">作品・実績 (Works)</h2>
-
-  <div class="works-grid">
-    {works.map((work) => (
-      <div class="work-item">
-        <div class="work-icon">{work.icon}</div>
-        <div class="work-label">{work.label}</div>
-        {work.tech && <div class="work-tech">{work.tech}</div>}
-      </div>
-    ))}
-  </div>
-</section>
+  <section id="works">
+    <div class="works-grid">
+      {works.map((work) => (
+        <div class="work-item">
+          <div class="work-label">{work.label}</div>
+          {work.tech && <div class="work-tech">{work.tech}</div>}
+        </div>
+      ))}
+    </div>
+  </section>
+</div>
