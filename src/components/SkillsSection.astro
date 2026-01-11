@@ -1,0 +1,59 @@
+---
+interface Skill {
+  icon: string;
+  name: string;
+  description: string;
+  detail?: string;
+}
+
+interface Props {
+  tags?: string[];
+  skills?: Skill[];
+}
+
+const {
+  tags = ['Java', 'TypeScript', 'Spring Boot', 'React', 'AWS'],
+  skills = [
+    {
+      icon: '🔵',
+      name: 'Backend Development',
+      description: 'Java + Spring Bootを使用したWebアプリケーション開発。RESTful API設計とDB最適化に精通。',
+      detail: '得意分野: マイクロサービス / API設計'
+    },
+    {
+      icon: '🟣',
+      name: 'Frontend Development',
+      description: 'React + TypeScriptによるモダンなUI開発。Astro/Next.jsなどのフレームワークも活用。',
+      detail: '得意分野: コンポーネント設計 / UX改善'
+    },
+    {
+      icon: '🟡',
+      name: 'DevOps & Cloud',
+      description: 'Docker, AWS, CI/CDパイプラインの構築と運用。インフラの自動化と監視。',
+      detail: '資格: AWS Solutions Architect'
+    }
+  ]
+} = Astro.props;
+---
+
+<section id="skills">
+  <h2 class="section-title">スキル (Skills)</h2>
+
+  <div class="tag-list">
+    {tags.map((tag) => (
+      <span class="tag">{tag}</span>
+    ))}
+  </div>
+
+  {skills.map((skill) => (
+    <details>
+      <summary>{skill.icon} {skill.name}</summary>
+      <div class="trait-content">
+        {skill.description}
+        {skill.detail && (
+          <><br /><span style="color: var(--accent-green);">{skill.detail}</span></>
+        )}
+      </div>
+    </details>
+  ))}
+</section>

@@ -1,0 +1,357 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap');
+
+:root {
+  --bg-primary: #1e3a5f;
+  --bg-secondary: #2d5a87;
+  --bg-window: #0a1628;
+  --text-white: #ffffff;
+  --text-cream: #fffacd;
+  --accent-orange: #ff9f43;
+  --accent-yellow: #ffd93d;
+  --accent-blue: #54a0ff;
+  --accent-green: #26de81;
+  --border-gold: #daa520;
+  --content-width: 600px;
+  --side-padding: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DotGothic16', sans-serif;
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  color: var(--text-white);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ========== Main Content Container ========== */
+.main-content {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--side-padding);
+}
+
+/* ========== Sound Controls ========== */
+.sound-control {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+}
+
+.sound-btn {
+  background: var(--bg-window);
+  border: 2px solid var(--border-gold);
+  color: var(--text-cream);
+  padding: 8px 12px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sound-btn:hover {
+  background: var(--accent-orange);
+  color: var(--bg-window);
+}
+
+.sound-btn.muted {
+  opacity: 0.5;
+}
+
+/* ========== Hero Section ========== */
+.hero-section {
+  padding: 60px 0 24px;
+  text-align: center;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+  border: 3px solid var(--border-gold);
+  border-radius: 8px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.char-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  color: var(--accent-yellow);
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 6px;
+}
+
+.char-class {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--accent-blue);
+  margin-bottom: 16px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.stat-item {
+  background: var(--bg-window);
+  border: 2px solid var(--border-gold);
+  padding: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  text-align: center;
+}
+
+.stat-item span:first-child {
+  display: block;
+  color: var(--text-cream);
+  margin-bottom: 4px;
+}
+
+.stat-val {
+  color: var(--accent-green);
+}
+
+/* ========== Section ========== */
+.section-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--accent-yellow);
+  padding: 16px 0 12px;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.section-title::before {
+  content: '▶ ';
+  color: var(--accent-orange);
+}
+
+/* ========== Tags ========== */
+.tag-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.tag {
+  background: var(--bg-secondary);
+  color: var(--text-cream);
+  padding: 6px 10px;
+  border: 2px solid var(--accent-blue);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tag:hover {
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+/* ========== Accordion ========== */
+details {
+  background: var(--bg-window);
+  margin-bottom: 6px;
+  border: 2px solid var(--border-gold);
+}
+
+summary {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--text-cream);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  transition: background 0.2s;
+}
+
+summary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+summary::before {
+  content: '▷';
+  color: var(--accent-orange);
+}
+
+details[open] summary::before {
+  content: '▽';
+  color: var(--accent-yellow);
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.trait-content {
+  padding: 12px;
+  border-top: 1px solid var(--border-gold);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-cream);
+}
+
+/* ========== Works Grid (3列) ========== */
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.work-item {
+  background: var(--bg-window);
+  border: 2px solid var(--border-gold);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 8px;
+}
+
+.work-item:hover {
+  border-color: var(--accent-yellow);
+  background: rgba(255, 217, 61, 0.1);
+}
+
+.work-icon {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.work-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: var(--text-cream);
+  text-align: center;
+}
+
+.work-tech {
+  font-size: 8px;
+  color: var(--accent-blue);
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* ========== Contact Grid (3列) ========== */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.contact-item {
+  background: var(--bg-window);
+  border: 2px solid var(--border-gold);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-cream);
+  transition: all 0.2s;
+}
+
+.contact-item:hover {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+.contact-icon {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.contact-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+}
+
+/* ========== Responsive ========== */
+@media (min-width: 700px) {
+  :root {
+    --content-width: 650px;
+    --side-padding: 32px;
+  }
+
+  .char-name {
+    font-size: 20px;
+  }
+
+  .char-class {
+    font-size: 11px;
+  }
+
+  .stat-item {
+    font-size: 9px;
+    padding: 10px;
+  }
+
+  .section-title {
+    font-size: 13px;
+  }
+
+  .tag {
+    font-size: 8px;
+  }
+
+  summary {
+    font-size: 10px;
+  }
+
+  .trait-content {
+    font-size: 14px;
+  }
+
+  .work-icon {
+    font-size: 32px;
+  }
+
+  .work-label {
+    font-size: 7px;
+  }
+
+  .contact-icon {
+    font-size: 28px;
+  }
+
+  .contact-label {
+    font-size: 8px;
+  }
+}

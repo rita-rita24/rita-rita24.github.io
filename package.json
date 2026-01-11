@@ -1,0 +1,20 @@
+{
+  "name": "rpg-profile",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^4.16.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "typescript": "^5.7.0"
+  }
+}

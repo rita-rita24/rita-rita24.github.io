@@ -1,0 +1,42 @@
+---
+interface Stat {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  avatar?: string;
+  name?: string;
+  className?: string;
+  level?: number;
+  stats?: Stat[];
+}
+
+const {
+  avatar = '🧙',
+  name = 'Your Name',
+  className = 'Backend Engineer',
+  level = 99,
+  stats = [
+    { label: 'ATK', value: '1,240' },
+    { label: 'DEF', value: '850' },
+    { label: 'INT', value: '2,100' },
+    { label: 'AGI', value: '1,150' }
+  ]
+} = Astro.props;
+---
+
+<section id="profile" class="hero-section">
+  <div class="avatar">{avatar}</div>
+  <div class="char-name">{name}</div>
+  <div class="char-class">Class: {className} / Lv.{level}</div>
+
+  <div class="stats-grid">
+    {stats.map((stat) => (
+      <div class="stat-item">
+        <span>{stat.label}</span>
+        <span class="stat-val">{stat.value}</span>
+      </div>
+    ))}
+  </div>
+</section>

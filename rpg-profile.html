@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RPG Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      image-rendering: pixelated;
+    }
+
+    :root {
+      --bg-dark: #1a1c2c;
+      --bg-medium: #2a2d4a;
+      --text-white: #f4f4f4;
+      --text-yellow: #ffcd75;
+      --accent-blue: #5fcde4;
+      --accent-green: #6abe30;
+      --accent-red: #e43b44;
+      --border-color: #5a6988;
+    }
+
+    body {
+      font-family: 'DotGothic16', 'Press Start 2P', monospace;
+      background: var(--bg-dark);
+      color: var(--text-white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #three-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Sound Controls */
+    .sound-control {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+    }
+
+    .sound-btn {
+      background: var(--bg-medium);
+      border: 4px solid var(--border-color);
+      color: var(--text-white);
+      padding: 10px 15px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.1s;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+    }
+
+    .sound-btn:hover {
+      background: var(--accent-blue);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+    }
+
+    .sound-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    }
+
+    .sound-btn.muted {
+      opacity: 0.5;
+    }
+
+    /* RPG Window Frame */
+    .rpg-window {
+      background: var(--bg-medium);
+      border: 4px solid var(--text-white);
+      border-radius: 4px;
+      padding: 20px;
+      margin: 20px;
+      box-shadow: 
+        inset -4px -4px 0 var(--border-color),
+        inset 4px 4px 0 rgba(255,255,255,0.1),
+        8px 8px 0 rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .rpg-window::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      border: 2px solid var(--border-color);
+      pointer-events: none;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .hero-content {
+      max-width: 600px;
+    }
+
+    .pixel-avatar {
+      width: 128px;
+      height: 128px;
+      margin: 0 auto 30px;
+      background: var(--bg-medium);
+      border: 4px solid var(--text-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 24px;
+      color: var(--text-yellow);
+      margin-bottom: 15px;
+      text-shadow: 4px 4px 0 var(--bg-dark);
+      animation: textGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes textGlow {
+      0%, 100% { text-shadow: 4px 4px 0 var(--bg-dark); }
+      50% { text-shadow: 4px 4px 0 var(--bg-dark), 0 0 20px var(--text-yellow); }
+    }
+
+    .hero-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      color: var(--accent-blue);
+      margin-bottom: 20px;
+    }
+
+    .hero-description {
+      font-size: 14px;
+      line-height: 2;
+      margin-bottom: 30px;
+    }
+
+    .rpg-button {
+      display: inline-block;
+      background: linear-gradient(180deg, var(--accent-blue) 0%, #3a9db8 100%);
+      border: 4px solid var(--text-white);
+      color: var(--text-white);
+      padding: 15px 30px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 
+        inset -4px -4px 0 rgba(0,0,0,0.3),
+        inset 4px 4px 0 rgba(255,255,255,0.3),
+        4px 4px 0 rgba(0,0,0,0.5);
+      transition: all 0.1s;
+    }
+
+    .rpg-button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 
+        inset -4px -4px 0 rgba(0,0,0,0.3),
+        inset 4px 4px 0 rgba(255,255,255,0.3),
+        6px 6px 0 rgba(0,0,0,0.5);
+    }
+
+    .rpg-button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 
+        inset -4px -4px 0 rgba(0,0,0,0.3),
+        inset 4px 4px 0 rgba(255,255,255,0.3),
+        2px 2px 0 rgba(0,0,0,0.5);
+    }
+
+    /* Section Styles */
+    section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 18px;
+      color: var(--text-yellow);
+      text-align: center;
+      margin-bottom: 10px;
+      text-shadow: 3px 3px 0 var(--bg-dark);
+    }
+
+    .section-subtitle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--accent-blue);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    /* Status Window (About) */
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .status-avatar {
+      text-align: center;
+    }
+
+    .status-avatar .pixel-avatar {
+      width: 100px;
+      height: 100px;
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .status-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: var(--text-yellow);
+    }
+
+    .status-class {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--accent-green);
+      margin-top: 5px;
+    }
+
+    .status-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .stat-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      width: 80px;
+      color: var(--text-white);
+    }
+
+    .stat-bar {
+      flex: 1;
+      height: 20px;
+      background: var(--bg-dark);
+      border: 2px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-fill {
+      height: 100%;
+      transition: width 1s ease-out;
+    }
+
+    .stat-fill.hp { background: linear-gradient(180deg, #6abe30 0%, #3e8948 100%); }
+    .stat-fill.mp { background: linear-gradient(180deg, #5fcde4 0%, #3978a8 100%); }
+    .stat-fill.exp { background: linear-gradient(180deg, #ffcd75 0%, #c69c6d 100%); }
+
+    .stat-value {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      width: 60px;
+      text-align: right;
+    }
+
+    .about-text {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px dashed var(--border-color);
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    /* Skills Section */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .skill-category h3 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      color: var(--accent-green);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .skill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .skill-tag {
+      background: var(--bg-dark);
+      border: 2px solid var(--border-color);
+      padding: 8px 12px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .skill-tag:hover {
+      background: var(--accent-blue);
+      border-color: var(--text-white);
+      transform: translate(-2px, -2px);
+    }
+
+    /* Portfolio Section */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .portfolio-item {
+      background: var(--bg-dark);
+      border: 4px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s;
+      overflow: hidden;
+    }
+
+    .portfolio-item:hover {
+      border-color: var(--text-yellow);
+      transform: translate(-4px, -4px);
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+    }
+
+    .portfolio-thumbnail {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portfolio-thumbnail::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0,0,0,0.1) 2px,
+          rgba(0,0,0,0.1) 4px
+        );
+      pointer-events: none;
+    }
+
+    .portfolio-item:nth-child(1) .portfolio-thumbnail { background: linear-gradient(135deg, #5b6ee1 0%, #3f3f74 100%); }
+    .portfolio-item:nth-child(2) .portfolio-thumbnail { background: linear-gradient(135deg, #e43b44 0%, #9e2835 100%); }
+    .portfolio-item:nth-child(3) .portfolio-thumbnail { background: linear-gradient(135deg, #6abe30 0%, #3e8948 100%); }
+    .portfolio-item:nth-child(4) .portfolio-thumbnail { background: linear-gradient(135deg, #ffcd75 0%, #c69c6d 100%); }
+    .portfolio-item:nth-child(5) .portfolio-thumbnail { background: linear-gradient(135deg, #5fcde4 0%, #3978a8 100%); }
+    .portfolio-item:nth-child(6) .portfolio-thumbnail { background: linear-gradient(135deg, #9b6dc6 0%, #5a4a78 100%); }
+
+    .portfolio-info {
+      padding: 15px;
+      border-top: 4px solid var(--border-color);
+    }
+
+    .portfolio-info h3 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--text-yellow);
+      margin-bottom: 8px;
+    }
+
+    .portfolio-info p {
+      font-size: 12px;
+      color: var(--text-white);
+      margin-bottom: 10px;
+      line-height: 1.8;
+    }
+
+    .portfolio-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .portfolio-tech span {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      background: var(--bg-medium);
+      padding: 4px 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Contact Section */
+    .contact-content {
+      text-align: center;
+    }
+
+    .contact-message {
+      font-size: 14px;
+      line-height: 2;
+      margin-bottom: 30px;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-dark);
+      border: 4px solid var(--border-color);
+      padding: 15px 25px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--text-white);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .contact-link:hover {
+      border-color: var(--accent-blue);
+      background: var(--accent-blue);
+      transform: translate(-2px, -2px);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--border-color);
+      border-top: 4px solid var(--border-color);
+      margin-top: 40px;
+    }
+
+    /* Dialog Box Animation */
+    .typing-text {
+      overflow: hidden;
+      white-space: nowrap;
+      animation: typing 2s steps(30) forwards;
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .status-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .portfolio-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero h1 {
+        font-size: 16px;
+      }
+      .section-title {
+        font-size: 14px;
+      }
+    }
+
+    /* Scanline effect */
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+    }
+
+    /* Click to Start Overlay */
+    .start-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      cursor: pointer;
+    }
+
+    .start-overlay h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 24px;
+      color: var(--text-yellow);
+      margin-bottom: 40px;
+      text-shadow: 4px 4px 0 var(--bg-medium);
+    }
+
+    .start-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: var(--text-white);
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0; }
+    }
+
+    .start-overlay.hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Click to Start Overlay -->
+  <div class="start-overlay" id="startOverlay">
+    <h2>⚔️ PORTFOLIO QUEST ⚔️</h2>
+    <p class="start-text">▶ CLICK TO START</p>
+  </div>
+
+  <!-- Scanlines Effect -->
+  <div class="scanlines"></div>
+
+  <!-- Three.js Canvas -->
+  <canvas id="three-canvas"></canvas>
+
+  <!-- Sound Controls -->
+  <div class="sound-control">
+    <button class="sound-btn" id="bgmBtn">🎵 BGM</button>
+    <button class="sound-btn" id="sfxBtn">🔊 SFX</button>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content rpg-window">
+        <div class="pixel-avatar">🧙</div>
+        <h1>Your Name</h1>
+        <p class="hero-title">Lv.99 Backend Engineer</p>
+        <p class="hero-description">
+          JavaとSpring Bootを武器に、Webの世界を冒険中。<br>
+          コードを紡ぎ、プロダクトという名の魔法を生み出す。
+        </p>
+        <a href="#portfolio" class="rpg-button">▶ 冒険の記録を見る</a>
+      </div>
+    </section>
+
+    <!-- About Section (Status Screen) -->
+    <section id="about">
+      <h2 class="section-title">📊 STATUS</h2>
+      <p class="section-subtitle">- ステータス -</p>
+      <div class="rpg-window">
+        <div class="status-grid">
+          <div class="status-avatar">
+            <div class="pixel-avatar">🧙</div>
+            <p class="status-name">Your Name</p>
+            <p class="status-class">Backend Mage</p>
+          </div>
+          <div class="status-bars">
+            <div class="stat-row">
+              <span class="stat-label">HP</span>
+              <div class="stat-bar">
+                <div class="stat-fill hp" style="width: 85%;"></div>
+              </div>
+              <span class="stat-value">850/1000</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">MP</span>
+              <div class="stat-bar">
+                <div class="stat-fill mp" style="width: 70%;"></div>
+              </div>
+              <span class="stat-value">700/1000</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">EXP</span>
+              <div class="stat-bar">
+                <div class="stat-fill exp" style="width: 60%;"></div>
+              </div>
+              <span class="stat-value">6000/10000</span>
+            </div>
+          </div>
+        </div>
+        <p class="about-text">
+          Web開発の世界に魅了され、日々技術の探求を続けている冒険者。
+          バックエンド開発を主軸としながら、フロントエンドやインフラにも興味を持ち、
+          フルスタックな視点でプロダクト開発というクエストに挑んでいる。
+        </p>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+      <h2 class="section-title">⚔️ SKILLS</h2>
+      <p class="section-subtitle">- 習得スキル -</p>
+      <div class="rpg-window">
+        <div class="skills-grid">
+          <div class="skill-category">
+            <h3>🗡️ 言語魔法</h3>
+            <div class="skill-list">
+              <span class="skill-tag">Java</span>
+              <span class="skill-tag">TypeScript</span>
+              <span class="skill-tag">Rust</span>
+              <span class="skill-tag">SQL</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>🛡️ フレームワーク</h3>
+            <div class="skill-list">
+              <span class="skill-tag">Spring Boot</span>
+              <span class="skill-tag">Next.js</span>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Tauri</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>🔮 道具・装備</h3>
+            <div class="skill-list">
+              <span class="skill-tag">Git</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">AWS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+      <h2 class="section-title">📜 QUEST LOG</h2>
+      <p class="section-subtitle">- 冒険の記録 -</p>
+      <div class="portfolio-grid">
+        <article class="portfolio-item">
+          <div class="portfolio-thumbnail">🤖</div>
+          <div class="portfolio-info">
+            <h3>AI Method Board</h3>
+            <p>AI活用事例を共有・発見できる魔法の掲示板</p>
+            <div class="portfolio-tech">
+              <span>Java 21</span>
+              <span>Spring Boot</span>
+              <span>Next.js</span>
+            </div>
+          </div>
+        </article>
+        <article class="portfolio-item">
+          <div class="portfolio-thumbnail">📁</div>
+          <div class="portfolio-info">
+            <h3>File Manager</h3>
+            <p>コマンドパレットとStack機能を備えた冒険者の道具箱</p>
+            <div class="portfolio-tech">
+              <span>Tauri</span>
+              <span>Rust</span>
+              <span>React</span>
+            </div>
+          </div>
+        </article>
+        <article class="portfolio-item">
+          <div class="portfolio-thumbnail">🎮</div>
+          <div class="portfolio-info">
+            <h3>Rhythm Game</h3>
+            <p>Three.jsで作成したリズムの魔法</p>
+            <div class="portfolio-tech">
+              <span>Three.js</span>
+              <span>TypeScript</span>
+              <span>WebAudio</span>
+            </div>
+          </div>
+        </article>
+        <article class="portfolio-item">
+          <div class="portfolio-thumbnail">📚</div>
+          <div class="portfolio-info">
+            <h3>Learning Platform</h3>
+            <p>対話形式で学習できる知識の泉</p>
+            <div class="portfolio-tech">
+              <span>Next.js</span>
+              <span>TypeScript</span>
+              <span>MDX</span>
+            </div>
+          </div>
+        </article>
+        <article class="portfolio-item">
+          <div class="portfolio-thumbnail">⚡</div>
+          <div class="portfolio-info">
+            <h3>Project Name</h3>
+            <p>プロジェクトの説明文</p>
+            <div class="portfolio-tech">
+              <span>Tech 1</span>
+              <span>Tech 2</span>
+            </div>
+          </div>
+        </article>
+        <article class="portfolio-item">
+          <div class="portfolio-thumbnail">🌐</div>
+          <div class="portfolio-info">
+            <h3>Project Name</h3>
+            <p>プロジェクトの説明文</p>
+            <div class="portfolio-tech">
+              <span>Tech 1</span>
+              <span>Tech 2</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+      <h2 class="section-title">💬 MESSAGE</h2>
+      <p class="section-subtitle">- 連絡先 -</p>
+      <div class="rpg-window">
+        <div class="contact-content">
+          <p class="contact-message">
+            冒険者よ、何か用件があれば気軽に連絡してくれ。<br>
+            共に新たなクエストに挑もう！
+          </p>
+          <div class="contact-links">
+            <a href="#" class="contact-link">📧 EMAIL</a>
+            <a href="#" class="contact-link">🐙 GITHUB</a>
+            <a href="#" class="contact-link">🐦 TWITTER</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 Your Name - All Rights Reserved</p>
+      <p style="margin-top: 10px;">🎮 THANK YOU FOR PLAYING 🎮</p>
+    </footer>
+  </div>
+
+  <script>
+    // ==================== Audio System ====================
+    class AudioSystem {
+      constructor() {
+        this.audioContext = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.bgmInterval = null;
+        this.masterGain = null;
+      }
+
+      init() {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.masterGain = this.audioContext.createGain();
+        this.masterGain.connect(this.audioContext.destination);
+        this.masterGain.gain.value = 0.3;
+      }
+
+      // 8bit音を生成
+      playTone(frequency, duration, type = 'square', volume = 0.3) {
+        if (!this.audioContext) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        
+        gainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.masterGain);
+        
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + duration);
+      }
+
+      // 効果音: ホバー
+      playHover() {
+        if (!this.sfxEnabled) return;
+        this.playTone(800, 0.05, 'square', 0.1);
+      }
+
+      // 効果音: クリック
+      playClick() {
+        if (!this.sfxEnabled) return;
+        this.playTone(600, 0.08, 'square', 0.2);
+        setTimeout(() => this.playTone(900, 0.08, 'square', 0.2), 50);
+      }
+
+      // 効果音: 決定音
+      playSelect() {
+        if (!this.sfxEnabled) return;
+        this.playTone(523, 0.1, 'square', 0.2);
+        setTimeout(() => this.playTone(659, 0.1, 'square', 0.2), 100);
+        setTimeout(() => this.playTone(784, 0.15, 'square', 0.2), 200);
+      }
+
+      // BGM: シンプルな8bitループ
+      startBGM() {
+        if (!this.bgmEnabled || this.bgmInterval) return;
+        
+        const melody = [
+          { note: 392, duration: 0.2 }, // G
+          { note: 440, duration: 0.2 }, // A
+          { note: 494, duration: 0.2 }, // B
+          { note: 523, duration: 0.4 }, // C
+          { note: 494, duration: 0.2 }, // B
+          { note: 440, duration: 0.2 }, // A
+          { note: 392, duration: 0.4 }, // G
+          { note: 330, duration: 0.2 }, // E
+          { note: 349, duration: 0.2 }, // F
+          { note: 392, duration: 0.4 }, // G
+          { note: 349, duration: 0.2 }, // F
+          { note: 330, duration: 0.2 }, // E
+          { note: 294, duration: 0.4 }, // D
+          { note: 262, duration: 0.4 }, // C
+        ];
+
+        const bass = [
+          { note: 131, duration: 0.4 }, // C2
+          { note: 165, duration: 0.4 }, // E2
+          { note: 196, duration: 0.4 }, // G2
+          { note: 165, duration: 0.4 }, // E2
+        ];
+
+        let melodyIndex = 0;
+        let bassIndex = 0;
+        let beatCount = 0;
+
+        const playBeat = () => {
+          if (!this.bgmEnabled) return;
+          
+          // メロディ
+          const melodyNote = melody[melodyIndex % melody.length];
+          this.playTone(melodyNote.note, melodyNote.duration * 0.8, 'square', 0.08);
+          melodyIndex++;
+          
+          // ベース (2拍ごと)
+          if (beatCount % 2 === 0) {
+            const bassNote = bass[bassIndex % bass.length];
+            this.playTone(bassNote.note, bassNote.duration * 0.8, 'triangle', 0.1);
+            bassIndex++;
+          }
+          
+          beatCount++;
+        };
+
+        this.bgmInterval = setInterval(playBeat, 300);
+        playBeat();
+      }
+
+      stopBGM() {
+        if (this.bgmInterval) {
+          clearInterval(this.bgmInterval);
+          this.bgmInterval = null;
+        }
+      }
+
+      toggleBGM() {
+        this.bgmEnabled = !this.bgmEnabled;
+        if (this.bgmEnabled) {
+          this.startBGM();
+        } else {
+          this.stopBGM();
+        }
+        return this.bgmEnabled;
+      }
+
+      toggleSFX() {
+        this.sfxEnabled = !this.sfxEnabled;
+        return this.sfxEnabled;
+      }
+    }
+
+    const audio = new AudioSystem();
+
+    // ==================== Three.js Scene ====================
+    let scene, camera, renderer;
+    let character, ground;
+    let moveDirection = 1;
+    let characterPos = 0;
+    const trees = [];
+    const clouds = [];
+
+    function initThreeJS() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1c2c);
+
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 5, 10);
+      camera.lookAt(0, 0, 0);
+
+      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: false });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(1); // ピクセルアート風
+
+      // 地面
+      const groundGeometry = new THREE.PlaneGeometry(100, 20);
+      const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x3e8948 });
+      ground = new THREE.Mesh(groundGeometry, groundMaterial);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -1;
+      scene.add(ground);
+
+      // グリッドパターン（草）
+      for (let i = -50; i < 50; i += 2) {
+        for (let j = -10; j < 10; j += 2) {
+          if (Math.random() > 0.7) {
+            const grassGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+            const grassMaterial = new THREE.MeshBasicMaterial({ color: 0x6abe30 });
+            const grass = new THREE.Mesh(grassGeometry, grassMaterial);
+            grass.position.set(i + Math.random(), -0.85, j + Math.random());
+            scene.add(grass);
+          }
+        }
+      }
+
+      // キャラクター（ドット絵風ボックス人間）
+      const characterGroup = new THREE.Group();
+      
+      // 体
+      const bodyGeometry = new THREE.BoxGeometry(0.8, 1, 0.5);
+      const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x5b6ee1 });
+      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      body.position.y = 0.5;
+      characterGroup.add(body);
+      
+      // 頭
+      const headGeometry = new THREE.BoxGeometry(0.7, 0.7, 0.5);
+      const headMaterial = new THREE.MeshBasicMaterial({ color: 0xffcd75 });
+      const head = new THREE.Mesh(headGeometry, headMaterial);
+      head.position.y = 1.35;
+      characterGroup.add(head);
+      
+      // 足
+      const legGeometry = new THREE.BoxGeometry(0.3, 0.5, 0.3);
+      const legMaterial = new THREE.MeshBasicMaterial({ color: 0x3f3f74 });
+      const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+      leftLeg.position.set(-0.2, -0.25, 0);
+      leftLeg.name = 'leftLeg';
+      characterGroup.add(leftLeg);
+      
+      const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+      rightLeg.position.set(0.2, -0.25, 0);
+      rightLeg.name = 'rightLeg';
+      characterGroup.add(rightLeg);
+
+      character = characterGroup;
+      character.position.set(0, 0, 3);
+      scene.add(character);
+
+      // 木を追加
+      for (let i = 0; i < 15; i++) {
+        createTree(Math.random() * 80 - 40, Math.random() * 10 - 8);
+      }
+
+      // 雲を追加
+      for (let i = 0; i < 8; i++) {
+        createCloud(Math.random() * 60 - 30, 6 + Math.random() * 3, Math.random() * -10 - 5);
+      }
+
+      // ライト
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function createTree(x, z) {
+      const treeGroup = new THREE.Group();
+      
+      // 幹
+      const trunkGeometry = new THREE.BoxGeometry(0.5, 2, 0.5);
+      const trunkMaterial = new THREE.MeshBasicMaterial({ color: 0x8b5a2b });
+      const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+      trunk.position.y = 0;
+      treeGroup.add(trunk);
+      
+      // 葉
+      const leavesGeometry = new THREE.BoxGeometry(2, 2, 2);
+      const leavesMaterial = new THREE.MeshBasicMaterial({ color: 0x228b22 });
+      const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+      leaves.position.y = 2;
+      treeGroup.add(leaves);
+      
+      treeGroup.position.set(x, 0, z);
+      scene.add(treeGroup);
+      trees.push(treeGroup);
+    }
+
+    function createCloud(x, y, z) {
+      const cloudGroup = new THREE.Group();
+      
+      const cloudGeometry = new THREE.BoxGeometry(2, 1, 1);
+      const cloudMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
+      
+      const cloud1 = new THREE.Mesh(cloudGeometry, cloudMaterial);
+      cloudGroup.add(cloud1);
+      
+      const cloud2 = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 0.8), cloudMaterial);
+      cloud2.position.set(1.2, 0.2, 0);
+      cloudGroup.add(cloud2);
+      
+      const cloud3 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 0.6), cloudMaterial);
+      cloud3.position.set(-1, 0.1, 0);
+      cloudGroup.add(cloud3);
+      
+      cloudGroup.position.set(x, y, z);
+      scene.add(cloudGroup);
+      clouds.push(cloudGroup);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    let time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.05;
+
+      // キャラクター歩行アニメーション
+      if (character) {
+        characterPos += 0.02 * moveDirection;
+        character.position.x = Math.sin(characterPos) * 3;
+        
+        // 向きを変える
+        if (character.position.x > 2.9) moveDirection = -1;
+        if (character.position.x < -2.9) moveDirection = 1;
+        character.rotation.y = moveDirection > 0 ? 0 : Math.PI;
+        
+        // 足のアニメーション
+        const leftLeg = character.getObjectByName('leftLeg');
+        const rightLeg = character.getObjectByName('rightLeg');
+        if (leftLeg && rightLeg) {
+          leftLeg.rotation.x = Math.sin(time * 5) * 0.5;
+          rightLeg.rotation.x = Math.sin(time * 5 + Math.PI) * 0.5;
+        }
+        
+        // 上下バウンス
+        character.position.y = Math.abs(Math.sin(time * 5)) * 0.1;
+      }
+
+      // 雲の移動
+      clouds.forEach((cloud, i) => {
+        cloud.position.x += 0.01 * (i % 2 === 0 ? 1 : 0.5);
+        if (cloud.position.x > 40) cloud.position.x = -40;
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    // ==================== Event Listeners ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      const startOverlay = document.getElementById('startOverlay');
+      const bgmBtn = document.getElementById('bgmBtn');
+      const sfxBtn = document.getElementById('sfxBtn');
+
+      // スタート画面
+      startOverlay.addEventListener('click', () => {
+        audio.init();
+        audio.playSelect();
+        audio.startBGM();
+        startOverlay.classList.add('hidden');
+        initThreeJS();
+        animate();
+      });
+
+      // BGMトグル
+      bgmBtn.addEventListener('click', () => {
+        const enabled = audio.toggleBGM();
+        bgmBtn.classList.toggle('muted', !enabled);
+        audio.playClick();
+      });
+
+      // SFXトグル
+      sfxBtn.addEventListener('click', () => {
+        const enabled = audio.toggleSFX();
+        sfxBtn.classList.toggle('muted', !enabled);
+        if (enabled) audio.playClick();
+      });
+
+      // ホバー効果音
+      document.querySelectorAll('.rpg-button, .skill-tag, .portfolio-item, .contact-link, .sound-btn, a[href^="#"]').forEach(el => {
+        el.addEventListener('mouseenter', () => audio.playHover());
+      });
+
+      // クリック効果音
+      document.querySelectorAll('.rpg-button, .portfolio-item, .contact-link, a[href^="#"]').forEach(el => {
+        el.addEventListener('click', () => audio.playClick());
+      });
+
+      // スムーズスクロール
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
