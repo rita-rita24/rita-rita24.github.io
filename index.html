@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="アリエッティ-プロフィール" />
+    <title>アリエッティ-プロフィール</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+    <main class="profile-page" aria-label="アリエッティ プロフィール ページ">
+      <div class="profile-frame">
+        <div class="profile-stage">
+          <article class="profile-card">
+            <section class="left-panel" aria-label="プロフィール概要">
+              <div class="photo-card">
+                <img src="images/profile-reference/profile-photo.png" alt="アリエッティのイラスト" class="photo-inner" />
+              </div>
+
+              <div class="name-mark">アリエッティ</div>
+              <div class="name-rule" aria-hidden="true"></div>
+
+              <p class="lead-copy">
+                ものづくりが好きなフロントエンドエンジニアです。<br />
+                ユーザーに価値を届けるプロダクトをつくります。
+              </p>
+            </section>
+
+            <section class="right-panel" aria-label="プロフィール詳細">
+              <img src="images/profile-reference/branch-top.png" alt="" class="branch-top" />
+              <div class="profile-table">
+                <div class="profile-row" style="--row-index: 0">
+                  <img src="images/profile-reference/icon-user.png" alt="" class="row-icon" />
+                  <div class="row-label">ニックネーム</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>アリエッティ</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 1">
+                  <img src="images/profile-reference/icon-code.png" alt="" class="row-icon" />
+                  <div class="row-label">得意な技術</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>Laravel / JavaScript</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 2">
+                  <img src="images/profile-reference/icon-food.png" alt="" class="row-icon" />
+                  <div class="row-label">好きな食べ物</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>いくら、お刺身、お寿司、アイスクリーム</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 3">
+                  <img src="images/profile-reference/icon-sad.png" alt="" class="row-icon" />
+                  <div class="row-label">苦手な食べ物</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>紅しょうが、きゅうり</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 4">
+                  <img src="images/profile-reference/icon-book.png" alt="" class="row-icon" />
+                  <div class="row-label">好きな漫画</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>呪術廻戦、ブルーロック、寄生獣、BELACH、バーサス</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 5">
+                  <img src="images/profile-reference/icon-tv.png" alt="" class="row-icon" />
+                  <div class="row-label">好きなアニメ</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>銀魂、オーバーロード、DEATH NOTE、ノーゲーム・ノーライフ</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 6">
+                  <img src="images/profile-reference/icon-clapper.png" alt="" class="row-icon" />
+                  <div class="row-label">好きな映画</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>アベンジャーズ/エンドゲーム、時をかける少女、アイアンマン</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 7">
+                  <img src="images/profile-reference/icon-calendar.png" alt="" class="row-icon" />
+                  <div class="row-label">生年月日</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>2000年07月24日</span></div>
+                </div>
+                <div class="profile-row" style="--row-index: 8">
+                  <img src="images/profile-reference/icon-palette.png" alt="" class="row-icon" />
+                  <div class="row-label">好きな色</div>
+                  <div class="dot-rule" aria-hidden="true"></div>
+                  <div class="row-value"><span>グリーン</span></div>
+                </div>
+              </div>
+              <img src="images/profile-reference/mountain-bottom.png" alt="" class="mountain-bottom" />
+            </section>
+          </article>
+        </div>
+      </div>
+    </main>
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const design = { width: 1672, height: 941 };
+        const mobileQuery = window.matchMedia("(max-width: 900px)");
+
+        const fitProfile = () => {
+          if (mobileQuery.matches) {
+            root.style.removeProperty("--fit-scale");
+            root.style.removeProperty("--scaled-width");
+            root.style.removeProperty("--scaled-height");
+            return;
+          }
+
+          const scale = Math.min(1, window.innerWidth / design.width, window.innerHeight / design.height);
+          root.style.setProperty("--fit-scale", scale.toFixed(5));
+          root.style.setProperty("--scaled-width", `${design.width * scale}px`);
+          root.style.setProperty("--scaled-height", `${design.height * scale}px`);
+        };
+
+        fitProfile();
+        window.addEventListener("resize", fitProfile, { passive: true });
+        mobileQuery.addEventListener("change", fitProfile);
+      })();
+    </script>
+  </body>
+</html>
