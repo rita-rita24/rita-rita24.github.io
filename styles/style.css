@@ -187,33 +187,28 @@ img {
   position: absolute;
   left: 50px;
   top: 118px;
-  width: 780px;
-  height: 635px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 855px;
 }
 
 .profile-row {
-  --row-step: 74px;
-  position: absolute;
-  left: 0;
-  top: calc(var(--row-index) * var(--row-step));
-  width: 780px;
-  height: 52px;
+  display: grid;
+  grid-template-columns: 43px 154px 64px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: start;
+  min-height: 52px;
 }
 
 .row-icon {
-  position: absolute;
-  left: 0;
-  top: -3px;
   width: 43px;
   height: 43px;
   object-fit: contain;
 }
 
 .row-label {
-  position: absolute;
-  left: 57px;
-  top: 5px;
-  width: 154px;
+  padding-top: 5px;
   color: var(--ink);
   font-size: 25px;
   line-height: 1.2;
@@ -224,10 +219,7 @@ img {
 }
 
 .dot-rule {
-  position: absolute;
-  left: 223px;
-  top: 19px;
-  width: 83px;
+  margin-top: 19px;
   height: 3px;
   background-image: radial-gradient(circle, #ded9d1 1.45px, transparent 1.7px);
   background-size: 11px 3px;
@@ -235,33 +227,23 @@ img {
 }
 
 .row-value {
-  position: absolute;
-  left: 326px;
-  top: 6px;
-  width: 490px;
+  min-width: 0;
+  padding-top: 6px;
   color: var(--text);
   font-size: 22px;
   line-height: 1.55;
   font-weight: 400;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
-.row-value span {
+.row-value > span {
   display: block;
-  transform: scaleX(0.91);
-  transform-origin: left center;
 }
 
-.profile-row:nth-child(3) .row-value span {
-  transform: scaleX(0.94);
-}
-
-.profile-row:nth-child(5) .row-value span {
-  transform: scaleX(0.89);
-}
-
-.profile-row:nth-child(6) .row-value span {
-  transform: scaleX(0.925);
+.preference-item {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 @media (max-width: 900px) {
@@ -338,7 +320,7 @@ img {
     width: 100%;
     height: auto;
     margin: 0 auto;
-    font-size: 42px;
+    font-size: clamp(30px, 10.5vw, 42px);
     line-height: 1.1;
   }
 
@@ -359,6 +341,7 @@ img {
     width: 100%;
     height: auto;
     margin-top: 30px;
+    gap: 0;
   }
 
   .profile-row {
@@ -380,6 +363,7 @@ img {
 
   .row-label {
     width: auto;
+    padding-top: 0;
     font-size: 15px;
     transform: none;
   }
@@ -390,14 +374,14 @@ img {
 
   .row-value {
     width: auto;
+    padding-top: 0;
     font-size: 14px;
     white-space: normal;
   }
 
-  .row-value span,
-  .profile-row:nth-child(3) .row-value span,
-  .profile-row:nth-child(5) .row-value span,
-  .profile-row:nth-child(6) .row-value span {
-    transform: none;
+  .preference-item {
+    display: inline;
+    white-space: normal;
   }
+
 }
